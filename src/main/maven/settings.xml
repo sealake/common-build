@@ -1,112 +1,119 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <settings xmlns="http://maven.apache.org/SETTINGS/1.0.0"
-    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xsi:schemaLocation="http://maven.apache.org/SETTINGS/1.0.0 http://maven.apache.org/xsd/settings-1.0.0.xsd">
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/SETTINGS/1.0.0 http://maven.apache.org/xsd/settings-1.0.0.xsd">
 
-    <interactiveMode>true</interactiveMode>
-    <offline>false</offline>
-    <proxies> 
-    </proxies>
+  <localRepository>${user.home}/.m2/repository</localRepository>
+  <interactiveMode>true</interactiveMode>
+  <offline>false</offline>
+  <proxies> 
+  </proxies>
 
-    <mirrors>
-        <mirror>
-            <id>etd-nexus-mirror</id>
-            <name>etongdai nexus mirror</name>
-            <url>http://nexus.etongdai.org/nexus/repository/maven-public/</url>
-            <mirrorOf>*</mirrorOf>
-        </mirror>
-    </mirrors>
+  <mirrors>
+    <mirror>
+      <id>internal-nexus-mirror</id>
+      <name>internal nexus mirror</name>
+      <url>http://nexus.local/nexus/repository/maven-public/</url>
+      <mirrorOf>*</mirrorOf>
+    </mirror>
+  </mirrors>
 
-    <pluginGroups>
-        <pluginGroup>org.apache.maven.plugins</pluginGroup>
-        <pluginGroup>org.codehaus.mojo</pluginGroup>
-        <pluginGroup>org.sonarsource.scanner.maven</pluginGroup>
-    </pluginGroups>
+  <pluginGroups>
+    <pluginGroup>org.apache.maven.plugins</pluginGroup>
+    <pluginGroup>org.codehaus.mojo</pluginGroup>
+    <pluginGroup>org.sonarsource.scanner.maven</pluginGroup>
+  </pluginGroups>
 
-    <servers>
-        <server>
-            <id>etd-nexus-releases</id>
-            <username>deployment</username>
-            <password> {wwOIKLIvJDEHCvSfutHu+BBETGBwSMU7NNC4bSGLC8I=} </password>
-        </server>
-        <server>
-            <id>etd-nexus-snapshots</id>
-            <username>deployment</username>
-            <password> {wwOIKLIvJDEHCvSfutHu+BBETGBwSMU7NNC4bSGLC8I=} </password>
-        </server>
-        <server>
-            <id>etd-nexus-thirdparty</id>
-            <username>deployment</username>
-            <password> {wwOIKLIvJDEHCvSfutHu+BBETGBwSMU7NNC4bSGLC8I=} </password>
-        </server>
-    </servers>
+  <servers>
+    <server>
+      <id>internal-nexus-releases</id>
+      <username>deployment</username>
+      <password> {wwOIKLIvJDEHCvSfutHu+BBETGBwSMU7NNC4bSGLC8I=} </password>
+    </server>
+    <server>
+      <id>internal-nexus-snapshots</id>
+      <username>deployment</username>
+      <password> {wwOIKLIvJDEHCvSfutHu+BBETGBwSMU7NNC4bSGLC8I=} </password>
+    </server>
+    <server>
+      <id>internal-nexus-thirdparty</id>
+      <username>deployment</username>
+      <password> {wwOIKLIvJDEHCvSfutHu+BBETGBwSMU7NNC4bSGLC8I=} </password>
+    </server>
+  </servers>
 
-    <profiles>
-        <profile>
-            <id>etd-sonar</id> 
-            <activation> 
-                <activeByDefault>true</activeByDefault> 
-            </activation>
-            <properties>
-                <sonar.host.url>http://sonar.etongdai.org</sonar.host.url>
-            </properties>
-        </profile>
-        <profile>
-            <id>etd-nexus</id>
-            <properties>
-                <etd-nexus.repository>http://nexus.etongdai.org/nexus/repository</etd-nexus.repository>
-            </properties>
-            <repositories>
-                <repository>
-                    <id>etd-nexus-releases</id>
-                    <name>etongdai nexus releases</name>
-                    <url>${etd-nexus.repository}/maven-releases/</url>
-                    <releases><enabled>true</enabled></releases>
-                    <snapshots><enabled>false</enabled></snapshots>
-                </repository>
-                <repository>
-                    <id>etd-nexus-snapshots</id>
-                    <name>etongdai nexus snapshots</name>
-                    <url>${etd-nexus.repository}/maven-snapshots/</url>
-                    <releases><enabled>false</enabled></releases>
-                    <snapshots><enabled>true</enabled></snapshots>
-                </repository>
-                <repository>
-                    <id>local-nexus-thirdparty</id>
-                    <name>etongdai nexus thirdparty</name>
-                    <url>${etd-nexus.repository}/maven-thirdparty/</url>
-                    <releases><enabled>true</enabled></releases>
-                    <snapshots><enabled>true</enabled></snapshots>
-                </repository>
-            </repositories>
-            <pluginRepositories>
-                <pluginRepository>
-                    <id>etd-nexus-releases</id>
-                    <name>etongdai nexus releases</name>
-                    <url>${etd-nexus.repository}/maven-releases/</url>
-                    <releases><enabled>true</enabled></releases>
-                    <snapshots><enabled>false</enabled></snapshots>
-                </pluginRepository>
-                <pluginRepository>
-                    <id>etd-nexus-snapshots</id>
-                    <name>etongdai nexus snapshots</name>
-                    <url>${etd-nexus.repository}/maven-snapshots/</url>
-                    <releases><enabled>false</enabled></releases>
-                    <snapshots><enabled>true</enabled></snapshots>
-                </pluginRepository>
-                <pluginRepository>
-                    <id>etd-nexus-thirdparty</id>
-                    <name>etongdai nexus thirdparty</name>
-                    <url>${etd-nexus.repository}/maven-thirdparty/</url>
-                    <releases><enabled>true</enabled></releases>
-                    <snapshots><enabled>true</enabled></snapshots>
-                </pluginRepository>
-            </pluginRepositories>
-        </profile>
-    </profiles>
+  <profiles>
+    <!-- internal sonar profile -->
+    <profile>
+      <id>internal-sonar</id>
+      <activation>
+        <property>
+          <name>!internal-sonar.url</name>
+        </property>
+      </activation>
+      <properties>
+        <internal-sonar.url>http://sonar.local</internal-sonar.url>
+      </properties>
+    </profile>
 
-    <activeProfiles>
-        <activeProfile>etd-nexus</activeProfile>
-    </activeProfiles>
+    <!-- internal nexus profile -->
+    <profile>
+      <id>internal-nexus</id>
+      <properties>
+        <internal-nexus.repository>http://nexus.local/nexus/repository</internal-nexus.repository>
+        <sonar.host.url>${internal-sonar.url}</sonar.host.url>
+      </properties>
+      <repositories>
+        <repository>
+          <id>internal-nexus-releases</id>
+          <name>internal nexus releases</name>
+          <url>${internal-nexus.repository}/maven-releases/</url>
+          <releases><enabled>true</enabled></releases>
+          <snapshots><enabled>false</enabled></snapshots>
+        </repository>
+        <repository>
+          <id>internal-nexus-snapshots</id>
+          <name>internal nexus snapshots</name>
+          <url>${internal-nexus.repository}/maven-snapshots/</url>
+          <releases><enabled>false</enabled></releases>
+          <snapshots><enabled>true</enabled></snapshots>
+        </repository>
+        <repository>
+          <id>internal-nexus-thirdparty</id>
+          <name>internal nexus thirdparty</name>
+          <url>${internal-nexus.repository}/maven-thirdparty/</url>
+          <releases><enabled>true</enabled></releases>
+          <snapshots><enabled>true</enabled></snapshots>
+        </repository>
+      </repositories>
+      <pluginRepositories>
+        <pluginRepository>
+          <id>internal-nexus-releases</id>
+          <name>internal nexus releases</name>
+          <url>${internal-nexus.repository}/maven-releases/</url>
+          <releases><enabled>true</enabled></releases>
+          <snapshots><enabled>false</enabled></snapshots>
+        </pluginRepository>
+        <pluginRepository>
+          <id>internal-nexus-snapshots</id>
+          <name>internal nexus snapshots</name>
+          <url>${internal-nexus.repository}/maven-snapshots/</url>
+          <releases><enabled>false</enabled></releases>
+          <snapshots><enabled>true</enabled></snapshots>
+        </pluginRepository>
+        <pluginRepository>
+          <id>internal-nexus-thirdparty</id>
+          <name>internal nexus thirdparty</name>
+          <url>${internal-nexus.repository}/maven-thirdparty/</url>
+          <releases><enabled>true</enabled></releases>
+          <snapshots><enabled>true</enabled></snapshots>
+        </pluginRepository>
+      </pluginRepositories>
+    </profile>
+  </profiles>
+
+  <activeProfiles>
+    <activeProfile>internal-nexus</activeProfile>
+  </activeProfiles>
 </settings>

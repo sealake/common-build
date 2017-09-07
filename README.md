@@ -1,13 +1,13 @@
-# etd-build
+# common-build
 
-作为etongdai所有项目的父项目，提供父pom配置，通过为子项目设置maven插件来管理软件工程。 目前etd-build父pom定义了使用的maven的最低版本,java版本(java8),字符编码(UTF-8),常见的插件等内容。
+作为所有项目的父项目，提供父pom配置，通过为子项目设置maven插件来管理软件工程。 目前common-build父pom定义了使用的maven的最低版本,java版本(java8),字符编码(UTF-8),常见的插件等内容。
 
-想要使用etd-build提供的maven插件以及配置，只要将其设置为父项目即可。如下所示：
+想要使用common-build提供的maven插件以及配置，只要将其设置为父项目即可。如下所示：
 
 ```$xslt
     <parent>
         <groupId>com.etongdai</groupId>
-        <artifactId>etd-build</artifactId>
+        <artifactId>common-build</artifactId>
         <version>1.0.0-SNAPSHOT</version>
     </parent>
 ```
