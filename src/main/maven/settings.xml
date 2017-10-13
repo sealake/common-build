@@ -11,12 +11,23 @@
   </proxies>
 
   <mirrors>
+    <!--
     <mirror>
-      <id>internal-nexus-mirror</id>
+      <id>local-nexus-mirror</id>
       <name>internal nexus mirror</name>
       <url>http://nexus.local/nexus/repository/maven-public/</url>
       <mirrorOf>*</mirrorOf>
     </mirror>
+    -->
+
+    <!--
+    <mirror>
+      <id>internal-nexus-mirror</id>
+      <name>internal nexus mirror</name>
+      <url>http://nexus.sealake.net/nexus/repository/maven-public/</url>
+      <mirrorOf>*</mirrorOf>
+    </mirror>
+    -->
   </mirrors>
 
   <pluginGroups>
@@ -26,6 +37,21 @@
   </pluginGroups>
 
   <servers>
+    <server>
+      <id>local-nexus3-releases</id>
+      <username>deployment</username>
+      <password>deployment</password>
+    </server>
+    <server>
+      <id>local-nexus3-snapshots</id>
+      <username>deployment</username>
+      <password>deployment</password>
+    </server>
+    <server>
+      <id>local-nexus3-thirdparty</id>
+      <username>deployment</username>
+      <password>deployment</password>
+    </server>
     <server>
       <id>internal-nexus-releases</id>
       <username>deployment</username>
@@ -44,6 +70,19 @@
   </servers>
 
   <profiles>
+    <!-- local sonar profile -->
+    <profile>
+      <id>local-sonar</id>
+      <activation>
+        <property>
+          <name>!local-sonar.url</name>
+        </property>
+      </activation>
+      <properties>
+        <local-sonar.host.url>http://sonar.local</local-sonar.host.url>
+      </properties>
+    </profile>
+
     <!-- internal sonar profile -->
     <profile>
       <id>internal-sonar</id>
@@ -53,15 +92,70 @@
         </property>
       </activation>
       <properties>
-        <internal-sonar.url>http://sonar.local</internal-sonar.url>
+        <internal-sonar.url>http://sonar.sealake.net</internal-sonar.url>
       </properties>
+    </profile>
+
+    <!-- local nexus profile -->
+    <profile>
+      <id>local-nexus</id>
+      <properties>
+        <internal-nexus.repository>http://nexus.local/nexus/repository</internal-nexus.repository>
+        <sonar.host.url>${local-sonar.url}</sonar.host.url>
+      </properties>
+      <repositories>
+        <repository>
+          <id>local-nexus-releases</id>
+          <name>local nexus releases</name>
+          <url>${local-nexus.repository}/maven-releases/</url>
+          <releases><enabled>true</enabled></releases>
+          <snapshots><enabled>false</enabled></snapshots>
+        </repository>
+        <repository>
+          <id>local-nexus-snapshots</id>
+          <name>local nexus snapshots</name>
+          <url>${local-nexus.repository}/maven-snapshots/</url>
+          <releases><enabled>false</enabled></releases>
+          <snapshots><enabled>true</enabled></snapshots>
+        </repository>
+        <repository>
+          <id>local-nexus-thirdparty</id>
+          <name>local nexus thirdparty</name>
+          <url>${local-nexus.repository}/maven-thirdparty/</url>
+          <releases><enabled>true</enabled></releases>
+          <snapshots><enabled>true</enabled></snapshots>
+        </repository>
+      </repositories>
+      <pluginRepositories>
+        <pluginRepository>
+          <id>local-nexus-releases</id>
+          <name>local nexus releases</name>
+          <url>${local-nexus.repository}/maven-releases/</url>
+          <releases><enabled>true</enabled></releases>
+          <snapshots><enabled>false</enabled></snapshots>
+        </pluginRepository>
+        <pluginRepository>
+          <id>local-nexus-snapshots</id>
+          <name>local nexus snapshots</name>
+          <url>${local-nexus.repository}/maven-snapshots/</url>
+          <releases><enabled>false</enabled></releases>
+          <snapshots><enabled>true</enabled></snapshots>
+        </pluginRepository>
+        <pluginRepository>
+          <id>local-nexus-thirdparty</id>
+          <name>local nexus thirdparty</name>
+          <url>${local-nexus.repository}/maven-thirdparty/</url>
+          <releases><enabled>true</enabled></releases>
+          <snapshots><enabled>true</enabled></snapshots>
+        </pluginRepository>
+      </pluginRepositories>
     </profile>
 
     <!-- internal nexus profile -->
     <profile>
       <id>internal-nexus</id>
       <properties>
-        <internal-nexus.repository>http://nexus.local/nexus/repository</internal-nexus.repository>
+        <internal-nexus.repository>http://nexus.sealake.net/nexus/repository</internal-nexus.repository>
         <sonar.host.url>${internal-sonar.url}</sonar.host.url>
       </properties>
       <repositories>
