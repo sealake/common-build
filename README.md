@@ -6,7 +6,7 @@
 
 ```$xslt
     <parent>
-        <groupId>com.etongdai</groupId>
+        <groupId>net.sealake</groupId>
         <artifactId>common-build</artifactId>
         <version>1.0.0-SNAPSHOT</version>
     </parent>

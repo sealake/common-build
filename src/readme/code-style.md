@@ -1,4 +1,4 @@
-# etongdai Java代码规范
+# Java代码规范
 
 为了避免合作者使用不同代码格式造成混乱, 使代码在版本控制上的diff保持干净, 我们要求所有合作者使用同样的代码格式.
 
@@ -10,24 +10,24 @@
 
 <!-- vim-markdown-toc GFM -->
 * [git设置](#git设置)
-    * [全局禁止git自动替换换行符](#全局禁止git自动替换换行符)
-    * [检查git设置](#检查git设置)
-    * [项目级别的git设置](#项目级别的git设置)
+  * [全局禁止git自动替换换行符](#全局禁止git自动替换换行符)
+  * [检查git设置](#检查git设置)
+  * [项目级别的git设置](#项目级别的git设置)
 * [代码风格标准](#代码风格标准)
-    * [后端代码风格](#后端代码风格)
-    * [Web 代码风格](#web-代码风格)
+  * [后端代码风格](#后端代码风格)
+  * [Web 代码风格](#web-代码风格)
 * [Eclipse 代码风格设置](#eclipse-代码风格设置)
-    * [Eclipse import 调整 (与IntelliJ兼容)](#eclipse-import-调整-与intellij兼容)
+  * [Eclipse import 调整 (与IntelliJ兼容)](#eclipse-import-调整-与intellij兼容)
 * [IntelliJ 代码风格设置](#intellij-代码风格设置)
-    * [IntelliJ import 调整](#intellij-import-调整)
+  * [IntelliJ import 调整](#intellij-import-调整)
 * [Eclipse 代码风格工具简单使用](#eclipse-代码风格工具简单使用)
-    * [google style代码风格](#google-style代码风格)
-    * [editorconfig 插件](#editorconfig-插件)
-    * [checkstyle 插件](#checkstyle-插件)
-    * [eclipse-pmd 插件](#eclipse-pmd-插件)
-    * [findbugs 插件](#findbugs-插件)
-    * [JDepend4Eclipse 插件](#jdepend4eclipse-插件)
-    * [EclEmma 插件](#eclemma-插件)
+  * [google style代码风格](#google-style代码风格)
+  * [editorconfig 插件](#editorconfig-插件)
+  * [checkstyle 插件](#checkstyle-插件)
+  * [eclipse-pmd 插件](#eclipse-pmd-插件)
+  * [findbugs 插件](#findbugs-插件)
+  * [JDepend4Eclipse 插件](#jdepend4eclipse-插件)
+  * [EclEmma 插件](#eclemma-插件)
 * [其他文档](#其他文档)
 
 <!-- vim-markdown-toc -->
