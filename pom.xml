@@ -154,7 +154,7 @@
             <dockerDirectory>${project.basedir}/src/main/docker</dockerDirectory>
             <noCache>true</noCache>
             <!--this will use auth info in file :~/.docker/config.json-->
-            <useConfigFile>${docker-maven.useConfigFile}</useConfigFile>
+            <useConfigFile>false</useConfigFile>
           </configuration>
           <executions>
             <execution>
@@ -398,7 +398,6 @@
               <goal>test</goal>
             </goals>
             <configuration>
-              <argLine>${surefireArgLine}</argLine>
               <skip>${maven.test.skip}</skip>
               <useSystemClassLoader>false</useSystemClassLoader>
               <includes>
@@ -430,7 +429,6 @@
               <goal>integration-test</goal>
             </goals>
             <configuration>
-              <argLine>${failsafeArgLine}</argLine>
               <includes>
                 <include>**/*IT.java</include>
               </includes>
@@ -598,10 +596,10 @@
         </property>
       </activation>
       <properties>
-        <git.host>git.local</git.host>
+        <git.host>git.sealake.net</git.host>
         <git.organization>oss</git.organization>
         <git.default.branch>develop</git.default.branch>
-        <git.raw.common-build> http://${git.host}/${git.organization}/common-build/raw/${git.default.branch} </git.raw.common-build>
+        <git.raw.common-build> https://${git.host}/${git.organization}/common-build/raw/${git.default.branch} </git.raw.common-build>
       </properties>
     </profile>
 
@@ -803,6 +801,7 @@
         </dependency>
       </dependencies>
     </profile>
+
     <profile>
       <id>cobertura</id>
       <activation>
@@ -837,6 +836,7 @@
           </dependency>
         </dependencies>
       </dependencyManagement>
+
       <dependencies>
         <dependency>
           <groupId>net.sourceforge.cobertura</groupId>
