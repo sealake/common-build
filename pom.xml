@@ -3,12 +3,36 @@
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
-  <artifactId>common-build</artifactId>
-  <description>Module to centralize common resources and configuration for builds.</description>
   <groupId>net.sealake</groupId>
-  <name>common-build</name>
+  <artifactId>common-build</artifactId>
   <packaging>pom</packaging>
   <version>1.0.0-SNAPSHOT</version>
+
+  <name>common-build</name>
+  <description>Module to centralize common resources and configuration for builds.</description>
+  <url>https://github.com/sealake/common-build</url>
+
+  <licenses>
+    <license>
+      <name>The Apache License, Version 2.0</name>
+      <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+    </license>
+  </licenses>
+
+  <developers>
+    <developer>
+      <name>zechengzhao</name>
+      <email>zechengzhao@gmail.com</email>
+      <organization>sealake.net</organization>
+      <organizationUrl>https://sealake.net</organizationUrl>
+    </developer>
+  </developers>
+
+  <scm>
+    <url>https://github.com/sealake/common-build</url>
+    <connection>https://github.com/sealake/common-build.git</connection>
+    <developerConnection>https://sealake.net</developerConnection>
+  </scm>
 
   <repositories>
     <repository>
@@ -209,8 +233,17 @@
           <version>3.0.1</version>
         </plugin>
         <plugin>
+          <artifactId>maven-gpg-plugin</artifactId>
+          <version>1.5</version>
+        </plugin>
+        <plugin>
           <artifactId>maven-resources-plugin</artifactId>
           <version>3.0.1</version>
+        </plugin>
+        <plugin>
+          <groupId>org.sonatype.plugins</groupId>
+          <artifactId>nexus-staging-maven-plugin</artifactId>
+          <version>1.6.7</version>
         </plugin>
         <plugin>
           <groupId>pl.project13.maven</groupId>
@@ -515,8 +548,29 @@
           </execution>
         </executions>
       </plugin>
+      <plugin>
+        <artifactId>maven-gpg-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>sign-artifacts</id>
+            <phase>verify</phase>
+            <goals>
+              <goal>sign</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.sonatype.plugins</groupId>
+        <artifactId>nexus-staging-maven-plugin</artifactId>
+        <extensions>true</extensions>
+        <configuration>
+          <serverId>ossrh</serverId>
+          <nexusUrl>https://oss.sonatype.org/</nexusUrl>
+          <autoReleaseAfterClose>true</autoReleaseAfterClose>
+        </configuration>
+      </plugin>
     </plugins>
-
   </build>
 
   <profiles>
@@ -596,10 +650,10 @@
         </property>
       </activation>
       <properties>
-        <git.host>git.sealake.net</git.host>
-        <git.organization>oss</git.organization>
-        <git.default.branch>develop</git.default.branch>
-        <git.raw.common-build> https://${git.host}/${git.organization}/common-build/raw/${git.default.branch} </git.raw.common-build>
+        <git.host>github.com</git.host>
+        <git.organization>sealake</git.organization>
+        <git.default.branch>master</git.default.branch>
+        <git.raw.common-build> https://${git.host}/${git.organization}/common-build/${git.default.branch} </git.raw.common-build>
       </properties>
     </profile>
 
@@ -979,14 +1033,12 @@
   <!-- TODO: need add profiles for different environment -->
   <distributionManagement>
     <snapshotRepository>
-      <id>internal-nexus-snapshots</id>
-      <name>common utils Snapshot</name>
-      <url>${internal-nexus.repository}/maven-snapshots/</url>
+      <id>ossrh</id>
+      <url>https://oss.sonatype.org/content/repositories/snapshots</url>
     </snapshotRepository>
     <repository>
-      <id>internal-nexus-releases</id>
-      <name>common utils Release</name>
-      <url>${internal-nexus.repository}/maven-releases/</url>
+      <id>ossrh</id>
+      <url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
     </repository>
   </distributionManagement>
 </project>
