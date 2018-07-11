@@ -158,6 +158,45 @@
           <version>1.0.0</version>
         </plugin>
         <plugin>
+          <groupId>com.spotify</groupId>
+          <artifactId>docker-maven-plugin</artifactId>
+          <version>0.4.13</version>
+          <configuration>
+            <imageName>${docker.registry}/${project.artifactId}</imageName>
+            <imageTags>
+              <imageTag>${project.version}</imageTag>
+              <imageTag>latest</imageTag>
+            </imageTags>
+            <resources>
+              <resource>
+                <targetPath>/</targetPath>
+                <directory>${project.build.directory}</directory>
+                <include>${project.build.finalName}.jar</include>
+                <include>${project.build.finalName}-exec.jar</include>
+              </resource>
+            </resources>
+            <dockerDirectory>${project.basedir}/src/main/docker</dockerDirectory>
+            <noCache>true</noCache>
+            <!--this will use auth info in file :~/.docker/config.json-->
+            <useConfigFile>false</useConfigFile>
+          </configuration>
+          <executions>
+            <execution>
+              <id>remove-image</id>
+              <phase>clean</phase>
+              <goals>
+                <goal>removeImage</goal>
+              </goals>
+            </execution>
+          </executions>
+        </plugin>
+        <!-- see: https://github.com/SonarSource/sonar-scanner-maven -->
+        <plugin>
+          <groupId>org.sonarsource.scanner.maven</groupId>
+          <artifactId>sonar-maven-plugin</artifactId>
+          <version>3.2</version>
+        </plugin>
+        <plugin>
           <artifactId>maven-antrun-plugin</artifactId>
           <version>1.8</version>
         </plugin>
@@ -206,7 +245,13 @@
           <artifactId>nexus-staging-maven-plugin</artifactId>
           <version>1.6.7</version>
         </plugin>
+        <plugin>
+          <groupId>pl.project13.maven</groupId>
+          <artifactId>git-commit-id-plugin</artifactId>
+          <version>2.2.1</version>
+        </plugin>
 
+        <!-- cobertura-maven-plugin is deprecated, see: https://github.com/QualInsight/qualinsight-mojo-cobertura -->
         <plugin>
           <groupId>org.codehaus.mojo</groupId>
           <artifactId>cobertura-maven-plugin</artifactId>
@@ -478,6 +523,15 @@
               <goal>jar</goal>
             </goals>
           </execution>
+          <execution>
+            <id>aggregate</id>
+            <goals>
+              <goal>aggregate</goal>
+            </goals>
+            <phase>site</phase>
+            <configuration>
+            </configuration>
+          </execution>
         </executions>
       </plugin>
       <plugin>
@@ -518,6 +572,463 @@
       </plugin>
     </plugins>
   </build>
+
+  <profiles>
+    <profile>
+      <id>default-maven-test-failure-ignore</id>
+      <activation>
+        <property>
+          <name>!maven.test.failure.ignore</name>
+        </property>
+      </activation>
+      <properties>
+        <maven.test.failure.ignore>false</maven.test.failure.ignore>
+      </properties>
+    </profile>
+    <profile>
+      <id>default-maven-test-skip</id>
+      <activation>
+        <property>
+          <name>!maven.test.skip</name>
+        </property>
+      </activation>
+      <properties>
+        <maven.test.skip>false</maven.test.skip>
+      </properties>
+    </profile>
+    <profile>
+      <id>default-maven-integration-test-skip</id>
+      <activation>
+        <property>
+          <name>!maven.integration-test.skip</name>
+        </property>
+      </activation>
+      <properties>
+        <maven.integration-test.skip>false</maven.integration-test.skip>
+      </properties>
+    </profile>
+    <profile>
+      <id>default-docker-registry</id>
+      <activation>
+        <property>
+          <name>!docker.registry</name>
+        </property>
+      </activation>
+      <properties>
+        <docker.registry>registry.docker.local</docker.registry>
+      </properties>
+    </profile>
+    <profile>
+      <id>default-frontend-nodeDownloadRoot</id>
+      <activation>
+        <property>
+          <name>!frontend.nodeDownloadRoot</name>
+        </property>
+      </activation>
+      <properties>
+        <!-- <frontend.nodeDownloadRoot>https://npm.taobao.org/mirrors/node/</frontend.nodeDownloadRoot> -->
+        <frontend.nodeDownloadRoot>https://nodejs.org/dist/</frontend.nodeDownloadRoot>
+      </properties>
+    </profile>
+    <profile>
+      <id>default-frontend-npmDownloadRoot</id>
+      <activation>
+        <property>
+          <name>!frontend.npmDownloadRoot</name>
+        </property>
+      </activation>
+      <properties>
+        <frontend.npmDownloadRoot>https://registry.npmjs.org/npm/-/</frontend.npmDownloadRoot>
+      </properties>
+    </profile>
+
+    <profile>
+      <id>default-properties</id>
+      <activation>
+        <property>
+          <name>!default-properties</name>
+        </property>
+      </activation>
+      <properties>
+        <git.host>github.com</git.host>
+        <git.organization>sealake</git.organization>
+        <git.default.branch>master</git.default.branch>
+        <git.raw.common-build> https://${git.host}/${git.organization}/common-build/${git.default.branch} </git.raw.common-build>
+      </properties>
+    </profile>
+
+    <profile>
+      <id>default-checkstyle-config</id>
+      <activation>
+        <property>
+          <name>!checkstyle.config.location</name>
+        </property>
+      </activation>
+      <properties>
+        <checkstyle.config.location>${git.raw.common-build}/src/main/checkstyle/google_checks_6.19.xml</checkstyle.config.location>
+      </properties>
+    </profile>
+    <profile>
+      <id>default-pmd-ruleset</id>
+      <activation>
+        <property>
+          <name>!pmd.ruleset.location</name>
+        </property>
+      </activation>
+      <properties>
+        <pmd.ruleset.location>${git.raw.common-build}/src/main/pmd/pmd-ruleset-5.3.5.xml</pmd.ruleset.location>
+      </properties>
+    </profile>
+
+    <profile>
+      <id>jacoco</id>
+      <activation>
+        <property>
+          <name>!jacoco</name>
+        </property>
+      </activation>
+      <properties>
+        <jacoco-ut.skip>${maven.test.skip}</jacoco-ut.skip>
+        <jacoco-it.skip>${maven.integration-test.skip}</jacoco-it.skip>
+
+        <jacoco.version>0.7.7.201606060606</jacoco.version>
+        <jacoco.itReportPath>${project.build.directory}/jacoco-it.exec</jacoco.itReportPath>
+
+        <!-- <sonar.core.codeCoveragePlugin>jacoco</sonar.core.codeCoveragePlugin> -->
+        <sonar.java.coveragePlugin>jacoco</sonar.java.coveragePlugin>
+        <sonar.jacoco.reportPath>${project.build.directory}/jacoco.exec</sonar.jacoco.reportPath>
+        <sonar.jacoco.itReportPath>${jacoco.itReportPath}</sonar.jacoco.itReportPath>
+        <!-- should match version of sonar-java-plugin -->
+        <sonar-jacoco-listeners.version>4.4.0.8066</sonar-jacoco-listeners.version>
+      </properties>
+      <build>
+        <pluginManagement>
+          <plugins>
+            <plugin>
+              <groupId>org.jacoco</groupId>
+              <artifactId>jacoco-maven-plugin</artifactId>
+              <version>${jacoco.version}</version>
+            </plugin>
+          </plugins>
+        </pluginManagement>
+        <plugins>
+          <!-- see: https://dzone.com/articles/integration-jenkins-jacoco-and-sonarqube -->
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-surefire-plugin</artifactId>
+            <configuration>
+              <!-- Specific to generate mapping between tests and covered code -->
+              <properties>
+                <property>
+                  <name>listener</name>
+                  <value>org.sonar.java.jacoco.JUnitListener</value>
+                </property>
+              </properties>
+            </configuration>
+          </plugin>
+          <plugin>
+            <artifactId>maven-failsafe-plugin</artifactId>
+            <configuration>
+              <skip>${maven.integration-test.skip}</skip>
+              <properties>
+                <property>
+                  <name>listener</name>
+                  <value>org.sonar.java.jacoco.JUnitListener</value>
+                </property>
+              </properties>
+            </configuration>
+          </plugin>
+          <!-- http://www.eclemma.org/jacoco/trunk/doc/maven.html -->
+          <!-- see: https://github.com/timp/juice -->
+          <!-- see: https://github.com/jacoco/jacoco/issues/409 -->
+          <!-- https://www.petrikainulainen.net/programming/maven/creating-code-coverage-reports-for-unit-and-integration-tests-with-the-jacoco-maven-plugin/ -->
+          <plugin>
+            <groupId>org.jacoco</groupId>
+            <artifactId>jacoco-maven-plugin</artifactId>
+            <executions>
+              <execution>
+                <id>default-prepare-agent</id>
+                <goals>
+                  <goal>prepare-agent</goal>
+                </goals>
+                <phase>test-compile</phase>
+                <configuration>
+                  <!-- <destFile>${project.build.directory}/jacoco.exec</destFile> -->
+                  <propertyName>surefireArgLine</propertyName>
+                  <skip>${jacoco-ut.skip}</skip>
+                </configuration>
+              </execution>
+              <execution>
+                <id>default-prepare-agent-integration</id>
+                <goals>
+                  <goal>prepare-agent-integration</goal>
+                </goals>
+                <phase>pre-integration-test</phase>
+                <configuration>
+                  <append>true</append>
+                  <!-- <destFile>${project.build.directory}/jacoco-it.exec</destFile> -->
+                  <propertyName>failsafeArgLine</propertyName>
+                  <skip>${jacoco-it.skip}</skip>
+                </configuration>
+              </execution>
+              <execution>
+                <id>merge</id>
+                <phase>pre-site</phase>
+                <goals>
+                  <goal>merge</goal>
+                </goals>
+                <configuration>
+                  <destFile>${project.build.directory}/jacoco-combined.exec</destFile>
+                  <fileSets>
+                    <fileSet>
+                      <directory>${project.build.directory}</directory>
+                      <includes>
+                        <include>jacoco.exec</include>
+                        <include>jacoco-it.exec</include>
+                      </includes>
+                    </fileSet>
+                  </fileSets>
+                  <skip>${jacoco-it.skip}</skip>
+                </configuration>
+              </execution>
+              <execution>
+                <id>composite</id>
+                <phase>pre-site</phase>
+                <goals>
+                  <goal>report</goal>
+                </goals>
+                <configuration>
+                  <dataFile>${project.build.directory}/jacoco-combined.exec</dataFile>
+                  <outputDirectory>${project.reporting.outputDirectory}/jacoco-combined</outputDirectory>
+                  <skip>${jacoco-it.skip}</skip>
+                  <title>Combined</title>
+                </configuration>
+              </execution>
+              <execution>
+                <id>default-check</id>
+                <goals>
+                  <goal>check</goal>
+                </goals>
+                <configuration>
+                  <haltOnFailure>false</haltOnFailure>
+                  <rules>
+                    <rule implementation="org.jacoco.maven.RuleConfiguration">
+                      <element>BUNDLE</element>
+                      <limits>
+                        <limit implementation="org.jacoco.report.check.Limit">
+                          <counter>COMPLEXITY</counter>
+                          <value>COVEREDRATIO</value>
+                          <minimum>0.60</minimum>
+                        </limit>
+                      </limits>
+                    </rule>
+                  </rules>
+                </configuration>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+      </build>
+      <reporting>
+        <plugins>
+          <plugin>
+            <groupId>org.jacoco</groupId>
+            <artifactId>jacoco-maven-plugin</artifactId>
+            <reportSets>
+              <reportSet>
+                <reports>
+                  <report>report</report>
+                  <report>report-integration</report>
+                  <!-- <report>report-aggregate</report> -->
+                </reports>
+              </reportSet>
+            </reportSets>
+          </plugin>
+        </plugins>
+      </reporting>
+      <dependencies>
+        <dependency>
+          <groupId>org.sonarsource.java</groupId>
+          <artifactId>sonar-jacoco-listeners</artifactId>
+          <version>${sonar-jacoco-listeners.version}</version>
+          <scope>test</scope>
+        </dependency>
+      </dependencies>
+    </profile>
+
+    <profile>
+      <id>cobertura</id>
+      <activation>
+        <property>
+          <name>jacoco</name>
+          <value>false</value>
+        </property>
+      </activation>
+      <properties>
+        <jacoco-ut.skip>true</jacoco-ut.skip>
+        <jacoco-it.skip>true</jacoco-it.skip>
+      </properties>
+      <dependencyManagement>
+        <dependencies>
+          <!-- for cobertura-maven-plugin and qualinsight-mojo-cobertura -->
+          <dependency>
+            <groupId>net.sourceforge.cobertura</groupId>
+            <artifactId>cobertura</artifactId>
+            <version>2.1.1</version>
+            <exclusions>
+              <exclusion>
+                <groupId>ch.qos.logback</groupId>
+                <artifactId>logback-classic</artifactId>
+              </exclusion>
+            </exclusions>
+          </dependency>
+          <!-- resolve cobertura transitive junit version, and SpringJUnit4ClassRunner requires JUnit 4.12 or higher -->
+          <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>4.12</version>
+          </dependency>
+        </dependencies>
+      </dependencyManagement>
+
+      <dependencies>
+        <dependency>
+          <groupId>net.sourceforge.cobertura</groupId>
+          <artifactId>cobertura</artifactId>
+          <scope>test</scope>
+        </dependency>
+        <dependency>
+          <groupId>junit</groupId>
+          <artifactId>junit</artifactId>
+          <scope>test</scope>
+        </dependency>
+      </dependencies>
+      <build>
+        <plugins>
+          <!-- qualinsight-mojo-cobertura-core conflict with jacoco-maven-plugin -->
+          <!-- [WARNING] Classes in bundle 'x' do no match with execution data. -->
+          <!-- For report generation the same class files must be used as at runtime -->
+          <plugin>
+            <groupId>com.qualinsight.mojo.cobertura</groupId>
+            <artifactId>qualinsight-mojo-cobertura-core</artifactId>
+            <executions>
+              <execution>
+                <id>instrument-ut</id>
+                <goals>
+                  <goal>instrument-ut</goal>
+                </goals>
+              </execution>
+              <execution>
+                <id>instrument-it</id>
+                <goals>
+                  <goal>instrument-it</goal>
+                </goals>
+              </execution>
+              <execution>
+                <id>report-ut-coverage</id>
+                <goals>
+                  <goal>report-ut-coverage</goal>
+                </goals>
+              </execution>
+              <execution>
+                <id>report-it-coverage</id>
+                <goals>
+                  <goal>report-it-coverage</goal>
+                </goals>
+              </execution>
+              <execution>
+                <id>report-overall-coverage</id>
+                <goals>
+                  <goal>report-overall-coverage</goal>
+                </goals>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+
+    <profile>
+      <id>skip-docker-plugin-lifecycle-binding-when-publish-deploy-segregation</id>
+      <activation>
+        <activeByDefault>false</activeByDefault>
+        <property>
+          <name>!publish_deploy_segregation</name>
+        </property>
+      </activation>
+      <build>
+        <pluginManagement>
+          <plugins>
+            <plugin>
+              <groupId>com.spotify</groupId>
+              <artifactId>docker-maven-plugin</artifactId>
+              <executions>
+                <execution>
+                  <id>build-image</id>
+                  <phase>package</phase>
+                  <goals>
+                    <goal>build</goal>
+                  </goals>
+                </execution>
+                <execution>
+                  <id>push-image</id>
+                  <phase>deploy</phase>
+                  <goals>
+                    <goal>push</goal>
+                  </goals>
+                </execution>
+              </executions>
+            </plugin>
+          </plugins>
+        </pluginManagement>
+      </build>
+    </profile>
+
+    <profile>
+      <id>dependency-check</id>
+      <activation>
+        <property>
+          <name>dependency-check</name>
+          <value>true</value>
+        </property>
+      </activation>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.codehaus.mojo</groupId>
+            <artifactId>versions-maven-plugin</artifactId>
+          </plugin>
+        </plugins>
+      </build>
+      <reporting>
+        <plugins>
+          <plugin>
+            <groupId>org.codehaus.mojo</groupId>
+            <artifactId>versions-maven-plugin</artifactId>
+            <reportSets>
+              <reportSet>
+                <reports>
+                  <report>dependency-updates-report</report>
+                  <report>plugin-updates-report</report>
+                </reports>
+              </reportSet>
+            </reportSets>
+          </plugin>
+          <plugin>
+            <groupId>org.owasp</groupId>
+            <artifactId>dependency-check-maven</artifactId>
+            <reportSets>
+              <reportSet>
+                <reports>
+                  <report>aggregate</report>
+                </reports>
+              </reportSet>
+            </reportSets>
+          </plugin>
+        </plugins>
+      </reporting>
+    </profile>
+  </profiles>
 
   <!-- TODO: need add profiles for different environment -->
   <distributionManagement>
