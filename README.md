@@ -8,7 +8,7 @@
     <parent>
         <groupId>net.sealake</groupId>
         <artifactId>common-build</artifactId>
-        <version>1.0.0-SNAPSHOT</version>
+        <version>1.0.0.RELEASE</version>
     </parent>
 ```
 
